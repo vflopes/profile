@@ -1,0 +1,1 @@
+from activities.amazon_brazil_scraping import AmazonBrazilScraping

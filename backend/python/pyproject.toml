@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "profile"
+version = "0.1.0"
+description = ""
+authors = ["Victor França Lopes <18534956+vflopes@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+playwright = "^1.42.0"
+dependency-injector = "^4.41.0"
+temporalio = "^1.5.1"
+aiofiles = "^23.2.1"
+kafka-python = "^2.0.2"
+pyyaml = "^6.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
