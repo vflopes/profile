@@ -2,7 +2,8 @@ import asyncio
 
 from temporalio import workflow
 
-from activities import AmazonBrazilScraping
+with workflow.unsafe.imports_passed_through():
+    from activities import AmazonBrazilScraping
 
 from datetime import timedelta
 
@@ -32,25 +33,24 @@ class ListAmazonBrazilProducts:
                 break
             
             parallel_activities = []
-            
-            products_info = []
 
             for product in found_products:
-                    
-                    parallel_activities.append(
-                        workflow.execute_activity(
-                            activity=AmazonBrazilScraping.get_product_info,
-                            start_to_close_timeout=timedelta(seconds=15),
-                            args=[product["product_link"], geolocation],
-                        )
+                
+                if "bestsellers" in product["product_link"]:
+                    continue
+                
+                parallel_activities.append(
+                    workflow.execute_activity(
+                        activity=AmazonBrazilScraping.extract_product_info,
+                        start_to_close_timeout=timedelta(seconds=15),
+                        args=[product["product_link"], geolocation],
                     )
+                )
 
-                    if len(parallel_activities) == max_parallel_count:
-                        products_info = await asyncio.gather(*parallel_activities)
-                        parallel_activities = []
-
-                        return products_info
-
+                if len(parallel_activities) == max_parallel_count:
+                    await asyncio.gather(*parallel_activities)
+                    parallel_activities = []
+            
             if len(parallel_activities) > 0:
-                products_info = await asyncio.gather(*parallel_activities)
+                await asyncio.gather(*parallel_activities)
             

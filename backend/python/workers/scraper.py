@@ -25,6 +25,9 @@ async def main():
     task_queue = container.config.temporal.task_queue()
 
     amazon_brazil_scraping = AmazonBrazilScraping(
+        # producer=container.kafka_producer(),
+        elasticsearch_client=container.elasticsearch_async_client(),
+        openai_embeddings=container.openai_embeddings(),
         headless=container.config.amazon.brazil.headless(),
     )
 
@@ -34,7 +37,7 @@ async def main():
         workflows=[ListAmazonBrazilProducts],
         activities=[
             amazon_brazil_scraping.search,
-            amazon_brazil_scraping.get_product_info,
+            amazon_brazil_scraping.extract_product_info,
         ],
     )
 
